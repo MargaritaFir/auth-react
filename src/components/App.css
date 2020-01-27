@@ -1,0 +1,9 @@
+div{
+    text-align: center;
+
+}
+
+div > h1, h2 {
+    color: cadetblue;
+    text-align: center
+}

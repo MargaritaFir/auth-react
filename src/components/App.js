@@ -9,12 +9,15 @@ class App extends React.Component {
         this.state = {
             isLoading: true, // Data loading flag
             loggedIn: false, // Logged In flag
-            info: {} // Profile and friendlist info
+            currentUser: {},
+            friends: []
         }
         this.loginUser=this.loginUser.bind(this);
         this.getUserInfoMore=this.getUserInfoMore.bind(this);
         this.checkLogin=this.checkLogin.bind(this);
         this.logOut=this.logOut.bind(this);
+        this.getFriendsSearch=this.getFriendsSearch.bind(this);
+        this.getAllFriends=this.getAllFriends.bind(this);
     }
 
 
@@ -29,9 +32,12 @@ class App extends React.Component {
 
                 { (this.state.loggedIn) ? (  
                     <div>
-                        <img src={this.state.info.currentUser.photo} />
-                        <h2>{this.state.info.currentUser.name}</h2>
-                        <div className="status_friends"> <span> Друзей: </span> {this.state.info.currentUser.countFriends} </div>
+                        <img src={this.state.currentUser.photo} />
+                        <h2>{this.state.currentUser.name}</h2>
+                        <div className="status_friends"> <span> Друзей: </span> {this.state.currentUser.countFriends} </div>
+
+                    <button value="Маргарита Беккер" onClick={this.getFriendsSearch}>getFriendsSearch</button>
+                    <button onClick={this.getAllFriends}>getAllFriends</button>
 
 
                     </div>) : <h2>Hello User</h2>  }
@@ -45,7 +51,7 @@ class App extends React.Component {
                      { (this.state.loggedIn) ? 
                             <div className="friends_container">
 
-                                {this.state.info.friends.map((friend) => 
+                                {this.state.friends.map((friend) => 
                         
                                     <div className="friend_card">
                                          <div class="img_friend"><img src={friend.photo} /></div>
@@ -56,6 +62,34 @@ class App extends React.Component {
                     
             </div>
         )
+    }
+
+    getAllFriends(){
+        VK.Api.call('users.get', {
+            v: '5.95'
+        }, user =>
+                VK.Api.call('friends.get', { // Get friends info
+                    order: 'random',
+                    fields: ['photo_200_orig'],
+                    v: '5.95'
+                }, friends => { // Response processing
+                    user = user.response[0];
+                    friends = friends.response.items;
+                    
+                    let friendsUser = friends.map(friend => {
+                        return {
+                            name: `${friend.first_name} ${friend.last_name}`,
+                            photo: friend.photo_200_orig
+                        }
+                    });
+
+                    this.setState({           
+                        friends: friendsUser,
+    
+                    });
+
+                    console.log(this.state);
+                }));
     }
 
     checkLogin() {
@@ -89,6 +123,40 @@ class App extends React.Component {
         VK.Auth.logout(() => this.checkLogin())
     }
 
+    getFriendsSearch(e){
+
+        
+        // this.getAllFriends();
+
+        let friendVal = e.target.value,
+        regExp = new RegExp(friendVal, 'i'),
+        firstSym = friendVal.charAt(0);
+        let friends = this.state.friends;
+        let searchFriends = [];
+
+        if(friendVal.match(/[а-яa-z]/i)){
+
+            for(let i=0; i<friends.length; i++){
+
+                if(firstSym.toUpperCase() == friends[i].name.charAt(0) || firstSym == friends[i].name.charAt(0)){
+
+                    if(friends[i].name.match(regExp)){
+                        searchFriends.push(friends[i]);
+                    }
+                }
+            }
+            
+
+        }
+        console.log(searchFriends)
+
+        this.setState({
+            friends:searchFriends
+        })
+
+        console.log(this.state)
+    }
+
     getUserInfoMore(){
         VK.Api.call('users.get', { // Get profile info
             fields: ['photo_200_orig,bdate,'],
@@ -102,14 +170,14 @@ class App extends React.Component {
                     user = user.response[0];
                     friends = friends.response.items;
                     
-                    let info = {};
-                    info.currentUser = {
+                   
+                    let currentUser = {
                         name: `${user.first_name} ${user.last_name}`,
                         photo: user.photo_200_orig,
                         bdate: user.bdate,
                         countFriends: friends.length
                     };
-                    info.friends = friends.map(friend => {
+                    let friendsUser = friends.map(friend => {
                         return {
                             name: `${friend.first_name} ${friend.last_name}`,
                             photo: friend.photo_200_orig
@@ -118,12 +186,13 @@ class App extends React.Component {
 
                     
                     this.setState({ 
-                        info: info,
+                        currentUser: currentUser,
+                        friends: friendsUser,
                         isLoading: false,
                         loggedIn: true,
                     });
 
-                    console.log(info);
+                    console.log(this.state);
                 }));
 
      }

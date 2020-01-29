@@ -7,3 +7,31 @@ div > h1, h2 {
     color: cadetblue;
     text-align: center
 }
+
+.friends_container{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.friend_card{
+    width: 200px;
+    height: 250px;
+    margin: 20px;
+    border: 1px solid seagreen;
+}
+
+.img_friend{
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+}
+
+
+.status_friends{
+    margin: 10px;
+    font-weight: bold;
+    color: cadetblue
+
+}
+

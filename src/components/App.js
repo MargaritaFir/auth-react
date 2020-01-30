@@ -1,6 +1,10 @@
 import React from 'react';
 import './App.css';
 
+import FriendsContainer from './friends/FriendsContainer';
+import UserInfo from './user/UserInfo';
+import SearchComponent from './searchComponent/SearchComponent';
+
 
 class App extends React.Component {
 
@@ -10,14 +14,9 @@ class App extends React.Component {
             isLoading: true, // Data loading flag
             loggedIn: false, // Logged In flag
             currentUser: {},
-            friends: []
+            friends: [],
+            query: ''
         }
-        this.loginUser=this.loginUser.bind(this);
-        this.getUserInfoMore=this.getUserInfoMore.bind(this);
-        this.checkLogin=this.checkLogin.bind(this);
-        this.logOut=this.logOut.bind(this);
-        this.getFriendsSearch=this.getFriendsSearch.bind(this);
-        this.getAllFriends=this.getAllFriends.bind(this);
     }
 
 
@@ -32,12 +31,16 @@ class App extends React.Component {
 
                 { (this.state.loggedIn) ? (  
                     <div>
-                        <img src={this.state.currentUser.photo} />
-                        <h2>{this.state.currentUser.name}</h2>
-                        <div className="status_friends"> <span> Друзей: </span> {this.state.currentUser.countFriends} </div>
+                        
+                        <UserInfo {...this.state.currentUser}/>
 
-                    <button value="Маргарита Беккер" onClick={this.getFriendsSearch}>getFriendsSearch</button>
-                    <button onClick={this.getAllFriends}>getAllFriends</button>
+                                {/* Сделать инпут отдельно */}
+
+                                <SearchComponent query={this.state.query} getFriendsSearch ={(query) =>this.getFriendsSearch(query)}/>
+
+                        {/* <button value="Маргарита Беккер" onClick={this.getFriendsSearch}>getFriendsSearch</button> */}
+
+                        <button onClick={this.setAllFriends}>getAllFriends</button>
 
 
                     </div>) : <h2>Hello User</h2>  }
@@ -48,24 +51,30 @@ class App extends React.Component {
 
 
 
-                     { (this.state.loggedIn) ? 
-                            <div className="friends_container">
-
-                                {this.state.friends.map((friend) => 
-                        
-                                    <div className="friend_card">
-                                         <div class="img_friend"><img src={friend.photo} /></div>
-                                        <h5>{friend.name}</h5>
-                                    </div>) }
-
-                            </div> : null }
+                     { (this.state.loggedIn) ?<FriendsContainer friends={this.state.friends}/> : null }
                     
             </div>
         )
     }
 
-    getAllFriends(){
-        VK.Api.call('users.get', {
+    onInput(query) {
+        this.setState({
+          query
+        });
+        
+        this.getFriendsSearch(query);
+    }
+
+
+    setAllFriends = () => {
+        let friendsAll = this.getAllFriends();
+
+        this.setState({ friends: friendsAll})
+    }
+
+
+    getAllFriends = () =>{
+      return  VK.Api.call('users.get', {
             v: '5.95'
         }, user =>
                 VK.Api.call('friends.get', { // Get friends info
@@ -83,16 +92,18 @@ class App extends React.Component {
                         }
                     });
 
-                    this.setState({           
-                        friends: friendsUser,
-    
-                    });
+                    return friendsUser;
 
-                    console.log(this.state);
+                    // this.setState({           
+                    //     friends: friendsUser,
+    
+                    // });
+
                 }));
     }
 
-    checkLogin() {
+
+    checkLogin = () => {
         this.setState({ isLoading: true });
         VK.Auth.getLoginStatus(event => {
             if (event.status === "connected")
@@ -106,7 +117,7 @@ class App extends React.Component {
     }
 
 
-    loginUser()  {
+    loginUser = () => {
         VK.Auth.login((response) => { 
             if (response.session) {
                 console.log(response)
@@ -119,45 +130,50 @@ class App extends React.Component {
     }
 
 
-    logOut() {
+    logOut = () => {
         VK.Auth.logout(() => this.checkLogin())
     }
 
-    getFriendsSearch(e){
-
+    getFriendsSearch = (query) =>{
         
-        // this.getAllFriends();
+        let friends = this.getAllFriends();
 
-        let friendVal = e.target.value,
-        regExp = new RegExp(friendVal, 'i'),
-        firstSym = friendVal.charAt(0);
-        let friends = this.state.friends;
-        let searchFriends = [];
+        if(query=""){
+                this.setState({
+                friends:friends
+            })
+        } else {
 
-        if(friendVal.match(/[а-яa-z]/i)){
+            let friendVal = query,
+            regExp = new RegExp(friendVal, 'i'),
+            firstSym = friendVal.charAt(0);
+            let searchFriends = [];
 
-            for(let i=0; i<friends.length; i++){
+            if(friendVal.match(/[а-яa-z]/i)){
 
-                if(firstSym.toUpperCase() == friends[i].name.charAt(0) || firstSym == friends[i].name.charAt(0)){
+                for(let i=0; i<friends.length; i++){
 
-                    if(friends[i].name.match(regExp)){
+                    if(firstSym.toUpperCase() == friends[i].name.charAt(0) || firstSym == friends[i].name.charAt(0)){
+
+                        if(friends[i].name.match(regExp)){
                         searchFriends.push(friends[i]);
-                    }
-                }
-            }
-            
+                        }
+                     }
+                }    
 
-        }
-        console.log(searchFriends)
+             }
+            console.log(searchFriends)
 
-        this.setState({
-            friends:searchFriends
-        })
+            this.setState({
+                friends:searchFriends
+            })
+
+        }    
 
         console.log(this.state)
     }
 
-    getUserInfoMore(){
+    getUserInfoMore = () =>{ 
         VK.Api.call('users.get', { // Get profile info
             fields: ['photo_200_orig,bdate,'],
             v: '5.95'

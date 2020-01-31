@@ -14,8 +14,9 @@ class App extends React.Component {
             isLoading: true, // Data loading flag
             loggedIn: false, // Logged In flag
             currentUser: {},
-            friends: [],
-            query: ''
+            friends: [], // друзья пользователя
+            allFriends: [], // Для фильтрации
+            query: '' // параметр ввода для инпута
         }
     }
 
@@ -34,21 +35,13 @@ class App extends React.Component {
                         
                         <UserInfo {...this.state.currentUser}/>
 
-                                {/* Сделать инпут отдельно */}
-
+                                
+                                <button onClick={this.logOut}>Logout</button>
                                 <SearchComponent query={this.state.query} onInput ={this.onInput}/>
-
-                        {/* <button value="Маргарита Беккер" onClick={this.getFriendsSearch}>getFriendsSearch</button> */}
-
-                        <button onClick={this.setAllFriends}>getAllFriends</button>
-
-
-                    </div>) : <h2>Hello User</h2>  }
-
-
-                    {(!this.state.loggedIn) ? <button onClick={this.loginUser}>Login</button> :
-                        <button onClick={this.logOut}>Logout</button>}
-
+                     </div>) : (<div>
+                                    <h2>Hello User</h2>
+                                    <button onClick={this.loginUser}>Login</button>
+                                </div>   ) }
 
 
                      { (this.state.loggedIn) ?<FriendsContainer friends={this.state.friends}/> : null }
@@ -57,30 +50,25 @@ class App extends React.Component {
         )
     }
 
-    onInput(query) {
+    onInput =(e) =>{
 
         this.setState({
           query:e.target.value
         });
         
-        this.getFriendsSearch(query);
+        this.getFriendsSearch(e.target.value);
     }
 
-
-    setAllFriends = () => {
-        let friendsAll = this.getAllFriends();
-
-        this.setState({ friends: friendsAll})
-    }
 
 
     getAllFriends = () =>{
-      return  VK.Api.call('users.get', {
+
+     VK.Api.call('users.get', {
             v: '5.95',
             order: 'name'
         }, user =>
                 VK.Api.call('friends.get', { // Get friends info
-                    order: 'random',
+                    order: 'name',
                     fields: ['photo_200_orig'],
                     v: '5.95'
                 }, friends => { // Response processing
@@ -95,14 +83,15 @@ class App extends React.Component {
                         }
                     });
 
-                    return friendsUser;
-
-                    // this.setState({           
-                    //     friends: friendsUser,
+                    
+                    this.setState({           
+                        allFriends: friendsUser,
     
-                    // });
+                    });
+
 
                 }));
+
     }
 
 
@@ -139,13 +128,15 @@ class App extends React.Component {
 
     getFriendsSearch = (query) =>{
         
-        let friendsAll = this.getAllFriends();
+        this.getAllFriends();
 
         if(query==="" || query===null){
-                this.setState({
-                friends:friendsAll
-            })
+            
+            this.setState({friends: this.state.allFriends})
         } else {
+
+            let friendsAll = this.state.allFriends;
+            console.log(this.state)
 
             let friendVal = query,
             regExp = new RegExp(friendVal, 'i'),
@@ -165,7 +156,6 @@ class App extends React.Component {
                 }    
 
              }
-            console.log(searchFriends)
 
             this.setState({
                 friends:searchFriends
@@ -173,7 +163,6 @@ class App extends React.Component {
 
         }    
 
-        console.log(this.state)
     }
 
     getUserInfoMore = () =>{ 
@@ -183,7 +172,7 @@ class App extends React.Component {
             order: 'name'
         }, user =>
                 VK.Api.call('friends.get', { // Get friends info
-                    order: 'random',
+                    order: 'name',
                     fields: ['photo_200_orig, '],
                     v: '5.95'
                 }, friends => { // Response processing

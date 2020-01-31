@@ -5,7 +5,8 @@ import CardFriend from './CardFriend'
 
  const FriendsContainer = (props) => 
                             <div className="friends_container">
-                                {props.friends.map((friend) => 
+                               
+                                {(props.friends ===undefined) ? [] : props.friends.map((friend) => 
                                         <CardFriend {...friend} key={friend.id}/>
                                     ) 
                                 }

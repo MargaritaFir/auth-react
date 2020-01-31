@@ -15,46 +15,68 @@ html, body{
     height: 100%;
 }
 
+.container{
+    width: 100%;
+    height: 100%;
+    padding: 1.2rem;
+}
 
-
-div{
+div {
     text-align: center;
-
 }
 
-div > h1, h2 {
+.user_container{
+    width: 80%;
+    height: 80%;
+    margin: 0 auto;
+    border-radius: 10px;
+    text-align: center;
     color: cadetblue;
-    text-align: center
 }
 
-.friends_container{
+.container_friends{
+    width: 60%;
+    margin: 0 auto;
+}
+
+.friends_card_container{
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+ 
 }
 
 .friend_card{
     width: 200px;
     height: 250px;
-    margin: 20px;
+    margin: 1.4rem 1.4rem 1.4rem 0;
     /* border: 1px solid seagreen; */
     box-shadow: 0 5px 5px rgba(0,0,0,0.5), 0 5px 5px rgba(0,0,0,0.5);
 }
 
 
 .friend_card>h5 {
+    padding: 0 5px;
     padding-top: 20px;
+    
 }
 
 .img_friend{
     width: 200px;
     height: 200px;
     overflow: hidden;
+    
+}
+
+.img_friend >img{
+    width: 100%;
+    height: 100%;
 }
 
 
 .status_friends{
     margin: 10px;
+    margin-bottom: 0;
     font-weight: bold;
     color: cadetblue
 
@@ -63,7 +85,7 @@ div > h1, h2 {
 
 .form-autocomplite {
 
-    width:600px;
+    width:50%;
     margin: 0 auto;
 	height: 50px;
 	display: flex;
@@ -75,7 +97,7 @@ div > h1, h2 {
     font-weight: 500;
     font-size: 1.2rem;
     width: 100%;
-    height:50px;
+    height:100%;
     border: none;
     border: 1px solid rgba(0,0,0,0.3);
     border-radius: 4px;
@@ -103,6 +125,7 @@ button {
     width: 100px;
     cursor: pointer;
     border-radius: 10px;
+    outline:none;
 }
 
 button:hover {
@@ -111,7 +134,61 @@ button:hover {
     box-shadow:0px 2px 10px 5px #97B1BF;
     color:#000;
     border-radius: 10px;
+    outline:none;
+    font-weight: bold;
 }
 
 
 
+@media (max-width: 1280px) {
+
+    .container_friends{
+        width: 80%;
+    }
+
+    .form-autocomplite{
+        width: 60%;
+    }
+}
+
+@media (max-width: 756px) {
+
+    .container_friends{
+        width: 90%;
+        height: 40px;
+        font-size: 12px;
+    }
+
+    .form-autocomplite{
+        width: 70%;
+        height: 30px;
+    }
+
+    .img_friend{
+        width: 150px;
+        height: 150px;
+        overflow: hidden;
+    }
+
+    .friend_card{
+        width: 150px;
+        height: 200px;
+    }
+}
+
+@media (max-width: 360px){
+    .friend_card{
+        margin: 1rem 1rem 1rem 0;
+    }
+
+    .img_friend{
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+    }
+
+    .friend_card{
+        width: 100px;
+        height: 150px;
+    }
+}

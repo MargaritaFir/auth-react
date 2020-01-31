@@ -28,7 +28,7 @@ class App extends React.Component {
    
     render(){
         return (
-            <div>
+            <div className="container">
 
                 { (this.state.loggedIn) ? (  
                     <div>
@@ -37,14 +37,22 @@ class App extends React.Component {
 
                                 
                                 <button onClick={this.logOut}>Logout</button>
-                                <SearchComponent query={this.state.query} onInput ={this.onInput}/>
+                                
                      </div>) : (<div>
                                     <h2>Hello User</h2>
                                     <button onClick={this.loginUser}>Login</button>
                                 </div>   ) }
 
 
-                     { (this.state.loggedIn) ?<FriendsContainer friends={this.state.friends}/> : null }
+                     { (this.state.loggedIn) ?
+                     <div className="container_friends">
+                         <SearchComponent query={this.state.query} onInput ={this.onInput}/>
+                         <FriendsContainer friends={this.state.friends}/>
+
+                     </div>
+                     
+                     
+                     : null }
                     
             </div>
         )

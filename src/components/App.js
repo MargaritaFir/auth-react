@@ -36,7 +36,7 @@ class App extends React.Component {
 
                                 {/* Сделать инпут отдельно */}
 
-                                <SearchComponent query={this.state.query} getFriendsSearch ={(query) =>this.getFriendsSearch(query)}/>
+                                <SearchComponent query={this.state.query} onInput ={this.onInput}/>
 
                         {/* <button value="Маргарита Беккер" onClick={this.getFriendsSearch}>getFriendsSearch</button> */}
 
@@ -58,8 +58,9 @@ class App extends React.Component {
     }
 
     onInput(query) {
+
         this.setState({
-          query
+          query:e.target.value
         });
         
         this.getFriendsSearch(query);
@@ -75,7 +76,8 @@ class App extends React.Component {
 
     getAllFriends = () =>{
       return  VK.Api.call('users.get', {
-            v: '5.95'
+            v: '5.95',
+            order: 'name'
         }, user =>
                 VK.Api.call('friends.get', { // Get friends info
                     order: 'random',
@@ -88,7 +90,8 @@ class App extends React.Component {
                     let friendsUser = friends.map(friend => {
                         return {
                             name: `${friend.first_name} ${friend.last_name}`,
-                            photo: friend.photo_200_orig
+                            photo: friend.photo_200_orig,
+                            id: friend.id
                         }
                     });
 
@@ -136,11 +139,11 @@ class App extends React.Component {
 
     getFriendsSearch = (query) =>{
         
-        let friends = this.getAllFriends();
+        let friendsAll = this.getAllFriends();
 
-        if(query=""){
+        if(query==="" || query===null){
                 this.setState({
-                friends:friends
+                friends:friendsAll
             })
         } else {
 
@@ -151,12 +154,12 @@ class App extends React.Component {
 
             if(friendVal.match(/[а-яa-z]/i)){
 
-                for(let i=0; i<friends.length; i++){
+                for(let i=0; i<friendsAll.length; i++){
 
-                    if(firstSym.toUpperCase() == friends[i].name.charAt(0) || firstSym == friends[i].name.charAt(0)){
+                    if(firstSym.toUpperCase() == friendsAll[i].name.charAt(0) || firstSym == friendsAll[i].name.charAt(0)){
 
-                        if(friends[i].name.match(regExp)){
-                        searchFriends.push(friends[i]);
+                        if(friendsAll[i].name.match(regExp)){
+                        searchFriends.push(friendsAll[i]);
                         }
                      }
                 }    
@@ -176,7 +179,8 @@ class App extends React.Component {
     getUserInfoMore = () =>{ 
         VK.Api.call('users.get', { // Get profile info
             fields: ['photo_200_orig,bdate,'],
-            v: '5.95'
+            v: '5.95',
+            order: 'name'
         }, user =>
                 VK.Api.call('friends.get', { // Get friends info
                     order: 'random',
@@ -196,7 +200,8 @@ class App extends React.Component {
                     let friendsUser = friends.map(friend => {
                         return {
                             name: `${friend.first_name} ${friend.last_name}`,
-                            photo: friend.photo_200_orig
+                            photo: friend.photo_200_orig,
+                            id: friend.id
                         }
                     });
 

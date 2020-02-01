@@ -209,6 +209,7 @@ class App extends React.Component {
                     this.setState({ 
                         currentUser: currentUser,
                         friends: friendsUser,
+                        allFriends: friendsUser,
                         isLoading: false,
                         loggedIn: true,
                     });

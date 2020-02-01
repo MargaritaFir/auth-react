@@ -31,24 +31,25 @@ class App extends React.Component {
             <div className="container">
 
                 { (this.state.loggedIn) ? (  
-                    <div>
+                    <div className="auth_info">
                         
                         <UserInfo {...this.state.currentUser}/>
+                        <button onClick={this.logOut}>Logout</button>
+                                
+                     </div>) 
 
-                                
-                                <button onClick={this.logOut}>Logout</button>
-                                
-                     </div>) : (<div>
-                                    <h2>Hello User</h2>
-                                    <button onClick={this.loginUser}>Login</button>
-                                </div>   ) }
+                     : (<div className='non_auth'>
+                         <img  src="https://c7.uihere.com/icons/546/697/299/vk-vkontakte-icon-3f558c7243a06344fdd37f6d7f54cf2f.png" />
+                            <h2>Добро пожаловать на сайт</h2>
+                            <h2>VK-Auth</h2>
+                            <button onClick={this.loginUser}>Login</button>
+                        </div>   ) }
 
 
                      { (this.state.loggedIn) ?
                      <div className="container_friends">
                          <SearchComponent query={this.state.query} onInput ={this.onInput}/>
                          <FriendsContainer friends={this.state.friends}/>
-
                      </div>
                      
                      
@@ -59,12 +60,14 @@ class App extends React.Component {
     }
 
     onInput =(e) =>{
+        
+        let query = e.target.value.trim();
 
         this.setState({
-          query:e.target.value
+          query:query
         });
         
-        this.getFriendsSearch(e.target.value);
+        this.getFriendsSearch(query);
     }
 
 

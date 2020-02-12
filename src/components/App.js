@@ -61,7 +61,7 @@ class App extends React.Component {
 
     onInput =(e) =>{
         
-        let query = e.target.value.trim();
+        let query = e.target.value.trimLeft();
 
         this.setState({
           query:query
